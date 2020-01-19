@@ -6,32 +6,46 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      name: "",
-      price: ""
+      totalPrice: "",
+      items: []
     }
   }
 
-  handleChange = (event) => {
-    this.setState({ [event.target.name]: event.target.value });
+  componentDidMount() {
+    axios
+      .get("/api/items")
+      .then(res => res.data)
+      .then(itemsFromAPI => this.setState({ items: itemsFromAPI }))
+      .catch(err => console.log(err));
   }
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    axios
-      .post("/")
+  // change the total price based on the 
+  handleChange = (event) => {
+    console.log(event.target)
+    this.setState({ totalPrice: Number(event.target.value) });
   }
 
   render() {
     return (
       <div className="App">
         <header className="App-header">
+          {this.state.items.map(item => (
+            <div onClick={this.handleClick} key={item.id}>
+              {item.id} {item.name} {item.price}
+              {/* <form> */}
+              <select onChange={this.handleChange}>
+                <option value={item.price}>1</option>
+                <option value={item.price * 2}>2</option>
+                <option value={item.price * 3}>3</option>
+              </select>
+              {/* </form> */}
+            </div>))}
+
           <form>
-            <label>Name:</label>
-            <input name="name" type="text" onChange={this.handleChange} value={this.state.name}></input>
             <br />
+            Total Price: {this.state.totalPrice}
             <br />
-            <label>Price:</label>
-            <input name="price" type="text" onChange={this.handleChange} value={this.state.price}></input>
+            <button>Add To Database</button>
           </form>
         </header>
       </div>

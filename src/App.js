@@ -17,7 +17,8 @@ class App extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-
+    axios
+      .post("/")
   }
 
   render() {

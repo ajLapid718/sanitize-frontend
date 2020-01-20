@@ -27,6 +27,15 @@ class App extends Component {
     this.setState({ order: { ...this.state.order, [event.target.name]: Number(event.target.value) } })
   }
 
+  handleSubmit = (event) => {
+    event.preventDefault();
+    axios
+      .post("/api/orders", { products: Object.keys(this.state.order), totalPrice: this.calculateTotalPrice() })
+      .then(res => res.data)
+      .then(data => console.log(data))
+      .catch(err => console.log(err));
+  }
+
   render() {
     return (
       <div className="App">
@@ -42,7 +51,7 @@ class App extends Component {
               </select>
             </div>))}
 
-          <form>
+          <form onSubmit={this.handleSubmit}>
             <br />
             Total Price: ${this.calculateTotalPrice()}
             <br />

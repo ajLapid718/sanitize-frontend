@@ -6,8 +6,8 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      totalPrice: "",
-      items: []
+      items: [],
+      order: {}
     }
   }
 
@@ -19,10 +19,12 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
-  // change the total price based on the 
+  calculateTotalPrice = () => {
+    return Object.values(this.state.order).reduce((acc, curr) => acc + curr, 0);
+  }
+
   handleChange = (event) => {
-    console.log(event.target)
-    this.setState({ totalPrice: Number(event.target.value) });
+    this.setState({ order: { ...this.state.order, [event.target.name]: Number(event.target.value) } })
   }
 
   render() {
@@ -30,20 +32,19 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           {this.state.items.map(item => (
-            <div onClick={this.handleClick} key={item.id}>
+            <div key={item.id}>
               {item.id} {item.name} {item.price}
-              {/* <form> */}
-              <select onChange={this.handleChange}>
+              <select name={item.name} onChange={this.handleChange}>
+                <option value={0}>0</option>
                 <option value={item.price}>1</option>
                 <option value={item.price * 2}>2</option>
                 <option value={item.price * 3}>3</option>
               </select>
-              {/* </form> */}
             </div>))}
 
           <form>
             <br />
-            Total Price: {this.state.totalPrice}
+            Total Price: ${this.calculateTotalPrice()}
             <br />
             <button>Add To Database</button>
           </form>

@@ -7,7 +7,8 @@ class App extends Component {
     super();
     this.state = {
       items: [],
-      order: {}
+      itemAndPrice: {},
+      itemAndQuantity: {}
     }
   }
 
@@ -20,17 +21,27 @@ class App extends Component {
   }
 
   calculateTotalPrice = () => {
-    return Object.values(this.state.order).reduce((acc, curr) => acc + curr, 0);
+    return Object.values(this.state.itemAndPrice).reduce((acc, curr) => acc + curr, 0);
   }
 
   handleChange = (event) => {
-    this.setState({ order: { ...this.state.order, [event.target.name]: Number(event.target.value) } })
+    // modify the order, that way we can have unique keys, and a running count of the total price;
+    this.setState({ itemAndPrice: { ...this.state.itemAndPrice, [event.target.name]: Number(event.target.value) } })
+    // keep a running track of the quantities;
+    this.setState({ itemAndQuantity: { ...this.state.itemAndQuantity, [event.target.name]: Number(event.target.options[event.target.options.selectedIndex].text) } })
   }
 
   handleSubmit = (event) => {
     event.preventDefault();
+    
+    let productsToPost = [];
+
+    for (let key in this.state.itemAndQuantity) {
+      productsToPost.push({name: key, quantity: this.state.itemAndQuantity[key]})
+    }
+
     axios
-      .post("/api/orders", { products: Object.keys(this.state.order), totalPrice: this.calculateTotalPrice() })
+      .post("/api/orders", { products: productsToPost, totalPrice: this.calculateTotalPrice() })
       .then(res => res.data)
       .then(data => console.log(data))
       .catch(err => console.log(err));
